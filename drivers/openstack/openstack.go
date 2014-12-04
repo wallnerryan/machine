@@ -223,28 +223,19 @@ func (d *Driver) Create() error {
 	d.setOpenstackVMName()
 	
 	// *FixMe need to ingest keypair from openstack
-	//Get SSH key from flags, or create one.
+	// Get SSH key from flags, or create one.
 	
-	//Runn cloud-init scripts instead of ssh commands
-	//Load User Data for docker installation OR wait for SSH, 
-        var cloudInitData []byte
-        if d.NameServer == "" {
-	  cloudInitData = []byte(""+
-	  "#!/bin/bash\n"+
-	  "sudo echo -e 'docker\ndocker' | passwd root\n" +
-	  "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9\n"+
-	  "sudo sh -c 'echo deb https://get.docker.com/ubuntu docker main > /etc/apt/sources.list.d/docker.list'\n" +
-	  "sudo apt-get update\n" +
-	  "sudo apt-get -y install lxc-docker\n" +
-	  "sudo service docker stop\n" +
-	  "sudo service ufw stop\n" +
-	  "sudo docker -d -H tcp://0.0.0.0:2375 &\n")
-	} else {
-		  //Support different nameserver injection
-          cloudInitData = []byte(""+
+	// Image specified must support Cloud-init
+    var cloudInitData []byte
+    if d.NameServer != "" {
+	  nameServerLine := "sudo echo 'nameserver '" +d.NameServer+" > /etc/resolv.conf\n"
+	} else { nameServerLine := "" }
+    
+    // Set Cloud-init Data (Should we really use Cloud-init?)
+	cloudInitData = []byte(""+
           "#!/bin/bash\n"+
           "sudo echo -e 'docker\ndocker' | passwd root\n" +
-          "sudo echo 'nameserver '" +d.NameServer+" > /etc/resolv.conf\n"+
+          nameServerLine +
           "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9\n"+
           "sudo sh -c 'echo deb https://get.docker.com/ubuntu docker main > /etc/apt/sources.list.d/docker.list'\n" +
           "sudo apt-get update\n" +
@@ -252,14 +243,12 @@ func (d *Driver) Create() error {
           "sudo service docker stop\n" +
           "sudo service ufw stop\n" +
           "sudo docker -d -H tcp://0.0.0.0:2375 &\n")
-        }
-	/* Connect to Endpoint
-	   Authenticate
-	   Get compute client */
+	
+	// Connect to Endpoint Authenticate Get compute client
 	client := d.getClient()
 	
-	// TODO *FixMe Verify image, flavor,  exists
-	// just letting it pass through un checked right now
+	// TODO *FixMe Verify image and flavor exists
+	// just letting it pass through unchecked right now
 	
 	//create server
 	vmname := fmt.Sprintf("docker-host-%s", utils.GenerateRandomID())
