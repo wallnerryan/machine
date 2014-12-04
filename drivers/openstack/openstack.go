@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/docker/machine/pkg/log"
-	//"github.com/docker/machine/hosts/ssh"
+	"github.com/docker/machine/hosts/ssh"
 	"github.com/docker/machine/hosts/state"
 	"github.com/docker/machine/hosts/drivers"
 	flag "github.com/docker/machine/pkg/mflag"
@@ -482,7 +482,6 @@ func (d *Driver) GetSSHCommand(args ...string) *exec.Cmd {
 	return nil
 }
 
-
 func (d *Driver) getNetworkClient() *gophercloud.ServiceClient {
 	
    // why did i set these vars first?
@@ -546,31 +545,29 @@ func (d *Driver) setSecurityGroups() error {
 	
 	secopts1 := rules.CreateOpts{
 		Direction:      rules.DirIngress,
-		EtherType:	rules.Ether4,
-		Protocol: 	rules.ProtocolICMP,
+		EtherType:      rules.Ether4,
+		Protocol:       rules.ProtocolICMP,
 		PortRangeMax:	"22",
 		PortRangeMin:	"22",
-		SecGroupID:	d.SecurityGroup,
+		SecGroupID:     d.SecurityGroup,
 	}
 	secopts2 := rules.CreateOpts{
 		Direction:      rules.DirEgress,
-		EtherType:	rules.Ether4,
-		Protocol: 	rules.ProtocolTCP,
+		EtherType:      rules.Ether4,
+		Protocol:       rules.ProtocolTCP,
 		PortRangeMax:	"22",
 		PortRangeMin:	"22",
-		SecGroupID:	d.SecurityGroup,
+		SecGroupID:     d.SecurityGroup,
 	}
 	s1, secErr1 := rules.Create(client, secopts1).Extract()
 	fmt.Println("Err:", secErr1, s1)
 	if secErr1 != nil {
-		//log.Errorf(secErr1)
-                fmt.Println(secErr1)
+		log.Infof("Error adding SSH security group rule...already exist?")
 	}
 	s2, secErr2 := rules.Create(client, secopts2).Extract()
 	fmt.Println("Err:", secErr2, s2)
 	if secErr2 != nil {
-		//log.Errorf(secErr2)
-                fmt.Println(secErr2)
+		log.Infof("Error adding SSH security group rule...already exist?")
 	}
 
 	secopts3 := rules.CreateOpts{
@@ -592,14 +589,12 @@ func (d *Driver) setSecurityGroups() error {
 	s3, secErr3 := rules.Create(client, secopts3).Extract()
 	fmt.Println("Err:", secErr3, s3)
 	if secErr3 != nil {
-		//log.Errorf(secErr3)
-                fmt.Println(secErr3)
+		log.Infof("Error adding Docker security group rule...already exist?")
 	}
 	s4, secErr4 := rules.Create(client, secopts4).Extract()
 	fmt.Println("Err:", secErr4, s4)
 	if secErr4 != nil {
-		//log.Errorf(secErr4)
-                fmt.Println(secErr4)
+		log.Infof("Error adding Docker security group rule...already exist?")
 	}
 	
 	return err
