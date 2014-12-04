@@ -3,6 +3,11 @@
 	"GoVersion": "go1.3",
 	"Deps": [
 		{
+			"ImportPath": "github.com/wallnerryan/gophercloud",
+			"Comment": "weekly-44",
+			"Rev": "696c088491246273e92442aa66b5281e5bb34faa"
+		},
+                {
 			"ImportPath": "code.google.com/p/goauth2/oauth",
 			"Comment": "weekly-44",
 			"Rev": "696c088491246273e92442aa66b5281e5bb34faa"
@@ -123,5 +128,6 @@
 			"ImportPath": "github.com/tent/http-link-go",
 			"Rev": "ac974c61c2f990f4115b119354b5e0b47550e888"
 		}
+
 	]
 }
