@@ -2,11 +2,6 @@
 	"ImportPath": "github.com/docker/machine",
 	"GoVersion": "go1.3",
 	"Deps": [
-		{
-			"ImportPath": "github.com/wallnerryan/gophercloud",
-			"Comment": "weekly-44",
-			"Rev": "696c088491246273e92442aa66b5281e5bb34faa"
-		},
                 {
 			"ImportPath": "code.google.com/p/goauth2/oauth",
 			"Comment": "weekly-44",
